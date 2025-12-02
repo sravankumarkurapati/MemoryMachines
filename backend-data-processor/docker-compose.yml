@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Redis - Message Queue
+  redis:
+    image: redis:7-alpine
+    container_name: log_processor_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - log_processor_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - redis_data:/data
+
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: log_processor_api
+    ports:
+      - "8000:8000"
+    networks:
+      - log_processor_network
+    environment:
+      - ENVIRONMENT=local
+      - QUEUE_TYPE=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_TYPE=sqlite
+      - SQLITE_DB_PATH=/app/data/logs.db
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./api:/app/api
+      - ./shared:/app/shared
+      - ./tests:/app/tests
+      - sqlite_data:/app/data
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Worker Service
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: log_processor_worker
+    networks:
+      - log_processor_network
+    environment:
+      - ENVIRONMENT=local
+      - QUEUE_TYPE=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_TYPE=sqlite
+      - SQLITE_DB_PATH=/app/data/logs.db
+      - LOG_LEVEL=INFO
+      - PROCESSING_TIME_PER_CHAR=0.05
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./worker:/app/worker
+      - ./shared:/app/shared
+      - ./api:/app/api
+      - sqlite_data:/app/data
+    command: python -m worker.processor
+
+networks:
+  log_processor_network:
+    driver: bridge
+
+volumes:
+  redis_data:
+  sqlite_data:
