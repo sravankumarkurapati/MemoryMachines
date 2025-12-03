@@ -36,3 +36,4 @@ python-json-logger==2.0.7
 
 # Development
 python-dotenv==1.0.0
+google-cloud-pubsub==2.18.4
