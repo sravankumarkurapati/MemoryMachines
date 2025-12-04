@@ -75,18 +75,21 @@ KEY: Both JSON and Text paths normalize to same internal format before publishin
 
 ## Multi-Tenant Isolation
 
-Firestore Schema: tenants/{tenant_id}/processed_logs/{log_id}
+Firestore Schema: `tenants/{tenant_id}/processed_logs/{log_id}`
 
-Example:
-tenants/
-├── acme_corp/
-│   └── processed_logs/
-│       └── log_123
-└── beta_inc/
-    └── processed_logs/
-        └── log_456
+Example Structure:
 
-Physical separation ensures acme_corp cannot access beta_inc data.
+    tenants/
+    ├── acme_corp/
+    │   └── processed_logs/
+    │       ├── log_123
+    │       └── log_124
+    └── beta_inc/
+        └── processed_logs/
+            ├── log_456
+            └── log_457
+
+Physical separation ensures acme_corp cannot access beta_inc data. Each tenant has a separate document with its own subcollection.
 
 ## Crash Recovery
 
