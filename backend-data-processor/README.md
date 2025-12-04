@@ -138,13 +138,26 @@ Load Test Results:
 ## Project Structure
 
 backend-data-processor/
-├── api/                    # FastAPI application
-├── worker/                 # Worker service
-├── shared/                 # Database & queue abstractions
-├── tests/                  # Unit & integration tests
-├── Dockerfile.api.cloud    # API production container
-├── Dockerfile.worker.cloud # Worker production container
-└── docker-compose.yml      # Local development
+├── api/
+│   ├── main.py              # FastAPI application, /ingest endpoint
+│   ├── models.py            # Pydantic models for validation
+│   ├── config.py            # Environment configuration
+│   └── utils.py             # PII redaction, normalization
+├── worker/
+│   ├── processor.py         # Core message processing logic
+│   ├── cloud_worker.py      # HTTP endpoint for Pub/Sub push
+│   └── config.py            # Worker configuration
+├── shared/
+│   ├── message_queue.py     # Redis (local) and Pub/Sub (cloud) abstraction
+│   ├── database.py          # Firestore abstraction
+│   └── sqlite_database.py   # SQLite for local development
+├── tests/
+│   ├── test_api.py          # API endpoint tests
+│   └── test_integration.py  # End-to-end tests
+├── Dockerfile.api.cloud     # API production container
+├── Dockerfile.worker.cloud  # Worker production container
+├── docker-compose.yml       # Local development environment
+└── requirements.txt         # Python dependencies
 
 ## Local Development
 
