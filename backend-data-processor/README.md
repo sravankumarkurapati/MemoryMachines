@@ -169,7 +169,12 @@ curl http://localhost:8000/health
 
 ## Author
 
-Sravan Kumar Kurapati
-MS Information Systems, Northeastern University
-13+ years software engineering experience
-Email: kurapati.sr@northeastern.edu
+**Sravan Kumar Kurapati**
+
+- MS Information Systems, Northeastern University (4.0 GPA)
+- 13+ years software engineering experience
+- Former Senior Software Engineer & Delivery Manager, Tata Consultancy Services
+- Email: kurapati.sr@northeastern.edu
+- Location: Boston, MA
+
+Built for Memory Machines Co-op Application - December 2025
